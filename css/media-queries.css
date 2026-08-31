@@ -1,0 +1,247 @@
+/**
+ * media-queries.css
+ * ----------------------------------------------------------------------------
+ * PURPOSE
+ *   Common, production-ready media queries for responsive web applications.
+ *
+ * USAGE
+ *   This file contains reusable media-query patterns that can be copied into
+ *   any project and adapted to the project's design system.
+ *
+ * IMPORTANT
+ *   These breakpoints are general-purpose defaults, not mandatory rules.
+ *   Prefer CSS/container-driven responsive behavior over targeting specific
+ *   devices whenever possible.
+ *
+ * BREAKPOINTS
+ *   xs   < 576px
+ *   sm   >= 576px
+ *   md   >= 768px
+ *   lg   >= 992px
+ *   xl   >= 1200px
+ *   xxl  >= 1400px
+ *
+ *   The values are intentionally aligned with widely used responsive
+ *   conventions. Always adjust them when the actual design requires it.
+ *
+ * RECOMMENDED APPROACH
+ *   Prefer mobile-first CSS:
+ *
+ *   .card {
+ *     width: 100%;
+ *   }
+ *
+ *   @media (min-width: 768px) {
+ *     .card {
+ *       width: 50%;
+ *     }
+ *   }
+ *
+ *   Avoid writing large numbers of max-width overrides when min-width
+ *   breakpoints can express the same design more clearly.
+ * ----------------------------------------------------------------------------
+ */
+
+/* ==========================================================================
+   WIDTH BREAKPOINTS
+   ========================================================================== */
+
+/* Small phones
+   -------------------------------------------------------------------------- */
+
+@media (max-width: 575.98px) {
+    /* Extra-small screens */
+}
+
+/* Small devices / large phones
+   -------------------------------------------------------------------------- */
+
+@media (min-width: 576px) {
+    /* Small screens and above */
+}
+
+/* Medium devices / tablets
+   -------------------------------------------------------------------------- */
+
+@media (min-width: 768px) {
+    /* Tablets and above */
+}
+
+/* Large devices / desktops
+   -------------------------------------------------------------------------- */
+
+@media (min-width: 992px) {
+    /* Desktop and above */
+}
+
+/* Extra-large desktops
+   -------------------------------------------------------------------------- */
+
+@media (min-width: 1200px) {
+    /* Large desktop and above */
+}
+
+/* Extra-extra-large screens
+   -------------------------------------------------------------------------- */
+
+@media (min-width: 1400px) {
+    /* Very large desktop and above */
+}
+
+/* ==========================================================================
+   COMMON MAX-WIDTH BREAKPOINTS
+   ========================================================================== */
+
+/* Mobile only
+   -------------------------------------------------------------------------- */
+
+@media (max-width: 767.98px) {
+    /* Phones */
+}
+
+/* Tablet and below
+   -------------------------------------------------------------------------- */
+
+@media (max-width: 991.98px) {
+    /* Phones and tablets */
+}
+
+/* Desktop and below
+   -------------------------------------------------------------------------- */
+
+@media (max-width: 1199.98px) {
+    /* Smaller desktops, tablets and phones */
+}
+
+/* ==========================================================================
+   COMMON RESPONSIVE RANGES
+   ========================================================================== */
+
+/* Mobile
+   -------------------------------------------------------------------------- */
+
+@media (max-width: 767.98px) {
+    /* Mobile-specific styles */
+}
+
+/* Tablet only
+   -------------------------------------------------------------------------- */
+
+@media (min-width: 768px) and (max-width: 991.98px) {
+    /* Tablet-specific styles */
+}
+
+/* Desktop
+   -------------------------------------------------------------------------- */
+
+@media (min-width: 992px) {
+    /* Desktop-specific styles */
+}
+
+/* Large desktop
+   -------------------------------------------------------------------------- */
+
+@media (min-width: 1200px) {
+    /* Large desktop-specific styles */
+}
+
+/* ==========================================================================
+   ORIENTATION
+   ========================================================================== */
+
+@media (orientation: portrait) {
+    /* Portrait-specific styles */
+}
+
+@media (orientation: landscape) {
+    /* Landscape-specific styles */
+}
+
+/* ==========================================================================
+   POINTER / HOVER CAPABILITY
+   ========================================================================== */
+
+/* Devices capable of accurate hovering
+   -------------------------------------------------------------------------- */
+
+@media (hover: hover) and (pointer: fine) {
+    /* Desktop / mouse-like interactions */
+}
+
+/* Touch-oriented devices
+   -------------------------------------------------------------------------- */
+
+@media (hover: none) and (pointer: coarse) {
+    /* Touch-specific adjustments */
+}
+
+/* Devices with a coarse pointer
+   -------------------------------------------------------------------------- */
+
+@media (pointer: coarse) {
+    /* Increase hit areas / touch-friendly controls */
+}
+
+/* ==========================================================================
+   ACCESSIBILITY
+   ========================================================================== */
+
+/* User prefers reduced motion
+   -------------------------------------------------------------------------- */
+
+@media (prefers-reduced-motion: reduce) {
+
+    *,
+    *::before,
+    *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+        scroll-behavior: auto !important;
+    }
+}
+
+/* User prefers dark color scheme
+   -------------------------------------------------------------------------- */
+
+@media (prefers-color-scheme: dark) {
+    /* Dark-mode-specific styles */
+}
+
+/* User prefers light color scheme
+   -------------------------------------------------------------------------- */
+
+@media (prefers-color-scheme: light) {
+    /* Light-mode-specific styles */
+}
+
+/* ==========================================================================
+   CONTRAST / ACCESSIBILITY PREFERENCES
+   ========================================================================== */
+
+@media (prefers-contrast: more) {
+    /* Increase visual contrast where appropriate */
+}
+
+/* ==========================================================================
+   PRINT
+   ========================================================================== */
+
+@media print {
+    /* Print-specific styles */
+
+    nav,
+    button,
+    .no-print {
+        display: none !important;
+    }
+
+    body {
+        background: #fff;
+    }
+
+    a {
+        color: #000;
+        text-decoration: underline;
+    }
+}
