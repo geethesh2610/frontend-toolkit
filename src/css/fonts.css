@@ -1,0 +1,55 @@
+/* =========================================================
+   Custom Fonts
+   ========================================================= */
+
+/*
+  Template:
+
+  @font-face {
+    font-family: 'Font Name';
+    src: url('/fonts/font-file.woff2') format('woff2');
+    font-weight: 400;
+    font-style: normal;
+    font-display: swap;
+  }
+*/
+
+/* =========================================================
+   Font Family
+   ========================================================= */
+
+/* Regular - 400 */
+@font-face {
+  font-family: "CustomFont";
+  src: url("/fonts/CustomFont-Regular.woff2") format("woff2");
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+/* Medium - 500 */
+@font-face {
+  font-family: "CustomFont";
+  src: url("/fonts/CustomFont-Medium.woff2") format("woff2");
+  font-weight: 500;
+  font-style: normal;
+  font-display: swap;
+}
+
+/* Semi Bold - 600 */
+@font-face {
+  font-family: "CustomFont";
+  src: url("/fonts/CustomFont-SemiBold.woff2") format("woff2");
+  font-weight: 600;
+  font-style: normal;
+  font-display: swap;
+}
+
+/* Bold - 700 */
+@font-face {
+  font-family: "CustomFont";
+  src: url("/fonts/CustomFont-Bold.woff2") format("woff2");
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
+}
