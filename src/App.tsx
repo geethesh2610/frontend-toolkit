@@ -2,6 +2,10 @@ import { useMemo, useState } from "react";
 
 import DataTable from "./components/DataTable/DataTable";
 import { createDataTableColumnHelper } from "./components/DataTable/features";
+import { TodoList as ContextTodoList } from "./state/context/TodoList";
+import { TodoList as MobxTodoList } from "./state/mobx/TodoList";
+import { TodoList as ReduxTodoList } from "./state/redux/TodoList";
+import { TodoList as ZustandTodoList } from "./state/zustand/TodoList";
 
 interface Employee {
     id: string;
@@ -124,6 +128,28 @@ export const App = () => {
                 />
             </section>
 
+            <section>
+                <h2>State management templates (src/state/) — same todo-list domain, four ways</h2>
+                <div className="state-demo-grid">
+                    <div>
+                        <h3>Context + useReducer</h3>
+                        <ContextTodoList />
+                    </div>
+                    <div>
+                        <h3>Zustand</h3>
+                        <ZustandTodoList />
+                    </div>
+                    <div>
+                        <h3>Redux Toolkit</h3>
+                        <ReduxTodoList />
+                    </div>
+                    <div>
+                        <h3>MobX</h3>
+                        <MobxTodoList />
+                    </div>
+                </div>
+            </section>
+
             <style>{`
                 .demo-table { border-collapse: collapse; font-family: system-ui, sans-serif; font-size: 14px; }
                 .demo-th, .demo-td { border: 1px solid #ddd; padding: 6px 10px; background: white; text-align: left; }
@@ -133,6 +159,9 @@ export const App = () => {
                 .demo-pagination { margin-top: 8px; }
                 [data-pinned] { background: white; }
                 .demo-th[data-pinned] { background: #f5f5f5; }
+                .state-demo-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 24px; font-family: system-ui, sans-serif; font-size: 14px; }
+                .state-demo-grid ul { list-style: none; padding: 0; }
+                .state-demo-grid li { display: flex; align-items: center; justify-content: space-between; gap: 8px; padding: 2px 0; }
             `}</style>
         </div>
     );

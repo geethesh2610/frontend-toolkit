@@ -2,7 +2,7 @@
 
 A personal library of copy-paste-ready React/TypeScript pieces. Nothing here is meant to run as an app — each file is self-contained (or depends only on other files in this repo) so you can lift it straight into a new project. This doc is a catalog of what exists and when to reach for it, so future-you doesn't have to open every file to remember what's here.
 
-Stack: **React 19**, **TypeScript**, **Vite 8**, **Tailwind CSS 4**, **Zod 4**, **Axios**, **TanStack React Table v9**, **TanStack Virtual**.
+Stack: **React 19**, **TypeScript**, **Vite 8**, **Tailwind CSS 4**, **Zod 4**, **Axios**, **TanStack React Table v9**, **TanStack Virtual**, **Zustand**, **Redux Toolkit**, **MobX**.
 
 ---
 
@@ -70,6 +70,21 @@ const columns = helper.columns([
 ```
 
 See `DataTable.tsx`'s file header for more usage examples (server-side data, pinning + resizing together, virtualized large datasets, row selection).
+
+---
+
+## State management templates — `src/state/`
+
+Unlike the rest of this repo, these aren't meant to be imported as-is — they're **starter kits to copy into a new project wholesale**, then rename the domain (`Todo`/`todos`) and adjust to fit. All four implement the exact same tiny domain (a todo list: add/toggle/remove/clear-completed, plus a derived remaining-count) so you can diff them side by side and pick the one that fits the project, instead of comparing four unrelated examples. Each folder ships both the state code and a working React component that consumes it (form + list + remaining count), so copying a folder gets you something that actually renders, not just a store with nothing wired up. `src/App.tsx` renders all four side by side as a live comparison.
+
+| Folder | Approach | Key files |
+|---|---|---|
+| `context/` | React Context + `useReducer`, state and dispatch split into two contexts (so action-only consumers don't re-render on state changes) | `createSafeContext.ts` (generic, genuinely reusable on its own — throws instead of returning `undefined` when used outside its provider), `todoState.ts` (reducer + contexts), `TodoContext.tsx` (`TodoProvider`), `useTodo.ts` (consumer hooks) |
+| `zustand/` | Module-level store hook, no provider needed | `useTodoStore.ts` (store + `devtools` middleware, no-op if the Redux DevTools extension isn't installed) |
+| `redux/` | Redux Toolkit — `createSlice` (Immer-powered "mutable" reducers), memoized selectors | `todosSlice.ts`, `todosSelectors.ts` (`createSelector`), `store.ts` (`configureStore`), `hooks.ts` (typed `useAppDispatch`/`useAppSelector`) |
+| `mobx/` | Class store (`makeAutoObservable`) provided via Context so instances aren't a bare module singleton | `TodoStore.ts`, `todoStoreContext.ts` + `StoreContext.tsx` (provider), `useTodoStore.ts` (consumer hook) — components reading the store must be wrapped in `observer()` from `mobx-react-lite` |
+
+Every folder's `TodoList.tsx` is the copy-paste starting point for a real feature component; every store/context file's header comment says exactly what to rename when adapting it.
 
 ---
 
