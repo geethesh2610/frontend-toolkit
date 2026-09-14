@@ -4,6 +4,18 @@ A personal library of copy-paste-ready React/TypeScript pieces. Nothing here is 
 
 Stack: **React 19**, **TypeScript**, **Vite 8**, **Tailwind CSS 4**, **Zod 4**, **Axios**, **TanStack React Table v9**, **TanStack Virtual**, **Zustand**, **Redux Toolkit**, **MobX**.
 
+## How to use this repo
+
+There's no package to install — copy the file(s) you need into your target project and adjust imports.
+
+- **Hooks / components / utils / API clients / debugger / constants / data / CSS** — each file (or component folder) is standalone; copy it as-is. Check its "Notes" column or file header for its only-real dependency (usually another file in the same folder, e.g. `DataTable` needs `features.ts` + `columnHelpers.ts`).
+- **State management templates** (`src/state/`) — copy the whole folder for the approach you want, then rename the `Todo`/`todos` domain to your own.
+- `npm run dev` runs `src/App.tsx`, which renders `DataTable` (plain + virtualized), every `Select` configuration, and all four state templates side by side — the fastest way to see something working before you lift the code out.
+
+## Contents
+
+React hooks · UI components · State management templates · Utilities (array/date/number/object/string/error/validation/file/download/excel) · API clients · Debug toolkit · Constants · Data · CSS
+
 ---
 
 ## React hooks — `src/react-hooks/`
@@ -51,6 +63,7 @@ Generic and unstyled/minimally-styled — bring your own CSS/Tailwind classes vi
 | `Show` (`Show/Show.tsx`) | `<Show when={cond} fallback={...}>children</Show>` — conditional rendering as a component instead of `&&`/ternary. |
 | `ScrollArea` (`ScrollArea/ScrollArea.tsx` + `.css`) | `overflow` wrapper with custom-styled scrollbars (vertical/horizontal/both); override scrollbar colors via CSS vars (`--scrollbar-track`, `--scrollbar-thumb`, `--scrollbar-thumb-hover`). |
 | `DataTable` (`DataTable/DataTable.tsx`) | Full-featured headless table wrapping TanStack Table v9: sorting, per-column filters + debounced global search, pagination (client-side or server-side via `manualPagination`), column pinning (`start`/`end`) + resizing, column visibility menu, row selection (auto-injected checkbox column), CSV export, and row virtualization (`@tanstack/react-virtual`, opt-in via `enableRowVirtualization` + `containerHeight`). Style via `classNames={{ th, td, tr, ... }}` and `[data-sorted]`/`[data-pinned]`/`[data-selected]`/`[data-resizing]` selectors — no baked-in visual styling. See `DataTable/` subsection below. |
+| `Select` (`Select/Select.tsx`) | Headless, fully-configurable select — single or multi-value, `variant="custom"` (default) or `variant="native"` (a real `<select>`), searchable (local filter or async via `onSearch`), grouped options, multi-select as removable pills or a "N selected" summary, optional checkboxes, creatable (`enableCreatable` + `onCreateOption`), and virtualized option lists (`enableVirtualization`, same `@tanstack/react-virtual` dependency as `DataTable`). Dropdown positioning is hand-rolled (absolute below trigger, flips up once on open if cramped) rather than `@floating-ui/react` — a deliberate simplicity tradeoff, so it can clip inside `overflow: hidden` ancestors. Style via `classNames={{ trigger, dropdown, option, pill, ... }}` and `[data-active]`/`[data-selected]`/`[data-disabled]` selectors. See `Select/` subsection below. |
 
 ### `DataTable/` — usage note
 
@@ -70,6 +83,31 @@ const columns = helper.columns([
 ```
 
 See `DataTable.tsx`'s file header for more usage examples (server-side data, pinning + resizing together, virtualized large datasets, row selection).
+
+### `Select/` — usage note
+
+Everything is opt-in via props — a plain single-select needs almost nothing:
+
+```tsx
+import Select from './components/Select/Select'
+import type { SelectOption } from './components/Select/Select.types'
+
+const options: SelectOption<string>[] = [
+  { value: 'apple', label: 'Apple', group: 'Fruit' },
+  { value: 'carrot', label: 'Carrot', group: 'Vegetable' },
+]
+
+<Select options={options} value={value} onChange={setValue} placeholder="Pick one…" />
+
+// multi-select, searchable, pills
+<Select multiple searchable options={options} value={values} onChange={setValues} />
+
+// async/remote search — component stops filtering locally once onSearch is passed
+<Select searchable isLoading={loading} options={results} value={value} onChange={setValue}
+  onSearch={(query) => fetchResults(query).then(setResults)} />
+```
+
+`useSelect.ts` is where the interaction logic (open state, value, search/filter, keyboard nav, typeahead) lives; `CustomSelect.tsx`/`NativeSelect.tsx` are rendering only, switched on by `Select.tsx` via the `variant` prop. See `src/App.tsx` for all seven configurations (single, multi-pills, multi-summary, native, creatable, async, virtualized) side by side.
 
 ---
 
