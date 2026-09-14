@@ -8,6 +8,10 @@ import { TodoList as ContextTodoList } from "./state/context/TodoList";
 import { TodoList as MobxTodoList } from "./state/mobx/TodoList";
 import { TodoList as ReduxTodoList } from "./state/redux/TodoList";
 import { TodoList as ZustandTodoList } from "./state/zustand/TodoList";
+import { Button, type ButtonSize, type ButtonVariant } from "./styled-components/Button";
+
+const BUTTON_VARIANTS: ButtonVariant[] = ["primary", "secondary", "ghost"];
+const BUTTON_SIZES: ButtonSize[] = ["sm", "md", "lg"];
 
 interface Employee {
     id: string;
@@ -283,6 +287,30 @@ export const App = () => {
                             placeholder="Search 5,000 options…"
                             classNames={selectClassNames}
                         />
+                    </div>
+                </div>
+            </section>
+
+            <section>
+                <h2>Button (src/styled-components/Button/) — every variant &amp; size</h2>
+                <div style={{ display: "flex", flexDirection: "column", gap: 16, fontFamily: "system-ui, sans-serif", fontSize: 14 }}>
+                    {BUTTON_VARIANTS.map((variant) => (
+                        <div key={variant} style={{ display: "flex", alignItems: "center", gap: 12 }}>
+                            <span style={{ width: 80, textTransform: "capitalize" }}>{variant}</span>
+                            {BUTTON_SIZES.map((size) => (
+                                <Button key={size} variant={variant} size={size}>
+                                    {variant} / {size}
+                                </Button>
+                            ))}
+                            <Button variant={variant} disabled>
+                                Disabled
+                            </Button>
+                        </div>
+                    ))}
+                    <div>
+                        <Button variant="primary" fullWidth>
+                            Full width primary
+                        </Button>
                     </div>
                 </div>
             </section>
