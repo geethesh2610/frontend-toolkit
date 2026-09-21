@@ -210,12 +210,13 @@ export function inspectValue(value: unknown): InspectValue {
         }
     }
 
-    const keys = isObject
-        ? getInspectableKeys(value, {
-            showNonEnumerable: false,
-            showSymbols: false,
-        })
-        : [];
+    const keys =
+        value !== null && (typeof value === "object" || typeof value === "function")
+            ? getInspectableKeys(value, {
+                showNonEnumerable: false,
+                showSymbols: false,
+            })
+            : [];
 
     const size = getValueSize(value);
 

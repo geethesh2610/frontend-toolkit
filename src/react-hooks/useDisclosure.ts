@@ -115,7 +115,7 @@ export function useDisclosure(
     const [internalOpen, setInternalOpen] = useState(defaultOpen);
     const warnedRef = useRef(false);
 
-    if (process.env.NODE_ENV !== "production") {
+    if (typeof process !== "undefined" && process.env.NODE_ENV !== "production") {
         const isNowControlled = controlledOpen !== undefined;
         if (isControlled !== isNowControlled && !warnedRef.current) {
             warnedRef.current = true;

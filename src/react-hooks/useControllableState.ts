@@ -53,7 +53,7 @@ export function useControllableState<T>(
     const [internalValue, setInternalValue] = useState(defaultValue);
     const warnedRef = useRef(false);
 
-    if (process.env.NODE_ENV !== "production") {
+    if (typeof process !== "undefined" && process.env.NODE_ENV !== "production") {
         const isNowControlled = controlledValue !== undefined;
         if (isControlled !== isNowControlled && !warnedRef.current) {
             warnedRef.current = true;

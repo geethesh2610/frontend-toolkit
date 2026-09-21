@@ -486,7 +486,7 @@ export default function DataTable<TData extends RowData>({
     const headerGroups = table.getHeaderGroups();
     const filterRowHeaders = headerGroups[headerGroups.length - 1].headers;
 
-    if (process.env.NODE_ENV !== "production" && enableRowVirtualization && !containerHeight) {
+    if (typeof process !== "undefined" && process.env.NODE_ENV !== "production" && enableRowVirtualization && !containerHeight) {
         console.warn(
             "DataTable: `enableRowVirtualization` requires `containerHeight` to have a scroll " +
             "container to measure against. Virtualization is disabled until one is provided.",
