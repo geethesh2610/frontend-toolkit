@@ -42,6 +42,9 @@ export const TOOLKIT: ToolkitSection[] = [
             { name: "useEventListener", use: "Attach any DOM event with automatic cleanup, without writing addEventListener/removeEventListener by hand.", files: ["/src/react-hooks/useEventListener.ts"] },
             { name: "useCopyToClipboard", use: "\"Copy\" buttons — handles the clipboard write plus a temporary \"copied!\" state.", files: ["/src/react-hooks/useCopyToClipboard.ts"] },
             { name: "useControllableState", use: "Build a component that supports both `value`/`onChange` (controlled) and `defaultValue` (uncontrolled) with one hook.", files: ["/src/react-hooks/useControllableState.ts"] },
+            { name: "useLatest", use: "Read the CURRENT value of a prop/state inside a long-lived subscription (socket, interval) without re-subscribing every time it changes.", files: ["/src/react-hooks/useLatest.ts"] },
+            { name: "useStableCallback", use: "Give a handler a stable identity across renders (so a memoized child doesn't re-render) while it still calls your latest closure.", files: ["/src/react-hooks/useStableCallback.ts"] },
+            { name: "useWebWorker", use: "Run CPU-heavy work (big parse/sort/transform) off the main thread instead of janking the UI.", files: ["/src/react-hooks/useWebWorker.ts"] },
         ],
     },
     {
@@ -82,6 +85,15 @@ export const TOOLKIT: ToolkitSection[] = [
                     "/src/components/Select/Select.types.ts",
                     "/src/components/Select/sanitizeId.ts",
                     "/src/components/Select/index.ts",
+                ],
+            },
+            {
+                name: "VirtualList / VirtualGrid",
+                use: "A long list or uniform card/photo grid (hundreds+ items) where mounting every row/cell at once would be slow — renders only what's near the viewport.",
+                files: [
+                    "/src/components/VirtualList/VirtualList.tsx",
+                    "/src/components/VirtualList/VirtualGrid.tsx",
+                    "/src/components/VirtualList/index.ts",
                 ],
             },
         ],
@@ -154,6 +166,7 @@ export const TOOLKIT: ToolkitSection[] = [
             { name: "groupBy", use: "Bucket items into `{ [key]: item[] }` by a derived key.", files: ["/src/utils/array/groupBy.ts"] },
             { name: "unique", use: "Dedupe an array of primitives.", files: ["/src/utils/array/unique.ts"] },
             { name: "uniqueBy", use: "Dedupe an array of objects by some derived key (e.g. `.id`).", files: ["/src/utils/array/uniqueBy.ts"] },
+            { name: "processInChunks", use: "Process a huge array without blocking the main thread — yields back to the browser between chunks instead of running as one long task.", files: ["/src/utils/array/processInChunks.ts"] },
         ],
     },
     {
@@ -184,6 +197,7 @@ export const TOOLKIT: ToolkitSection[] = [
             { name: "omit", use: "Build a new object without the keys you list.", files: ["/src/utils/object/omit.ts"] },
             { name: "omitNil", use: "Strip only null/undefined before sending an object as an API payload/query string.", files: ["/src/utils/object/omitNil.ts"] },
             { name: "isEmpty", use: "Check an object has no own keys (`{}`).", files: ["/src/utils/object/isEmpty.ts"] },
+            { name: "shallowEqual", use: "Write a custom React.memo comparator, or bail out of recomputation when an object prop is \"the same\" in content but a new reference.", files: ["/src/utils/object/shallowEqual.ts"] },
         ],
     },
     {
@@ -240,11 +254,26 @@ export const TOOLKIT: ToolkitSection[] = [
         ],
     },
     {
+        folder: "utils/performance/",
+        blurb: "Plain-function performance helpers that work outside React too, not just inside components.",
+        items: [
+            { name: "rafThrottle", use: "Throttle a callback attached via addEventListener (scroll/mousemove/drag) to at most once per animation frame.", files: ["/src/utils/performance/rafThrottle.ts"] },
+        ],
+    },
+    {
+        folder: "utils/react/",
+        blurb: "React-specific utility functions that aren't hooks.",
+        items: [
+            { name: "lazyWithRetry", use: "Drop-in replacement for React.lazy that reloads the page once on a stale-chunk failure after a new deploy, instead of just erroring.", files: ["/src/utils/react/lazyWithRetry.ts"] },
+        ],
+    },
+    {
         folder: "api/",
         blurb: "Two independent HTTP wrappers — pick one per project, not both.",
         items: [
             { name: "fetch.ts (apiFetch)", use: "Want native fetch, but with JSON auto-encoding, a timeout, and it actually throwing on a non-2xx response.", files: ["/src/api/fetch.ts"] },
             { name: "axios.ts (api instance)", use: "Want a shared Axios instance with base URL/credentials set up and interceptor stubs ready for auth/error handling.", files: ["/src/api/axios.ts"] },
+            { name: "dedupeRequest", use: "Wrap an async function so overlapping calls with the same key share one in-flight promise instead of firing duplicate requests.", files: ["/src/api/dedupeRequest.ts"] },
         ],
     },
     {
@@ -258,6 +287,7 @@ export const TOOLKIT: ToolkitSection[] = [
             { name: "storage", use: "Poke at localStorage/sessionStorage from code or the devtools console.", files: ["/src/debugger/storage.ts"] },
             { name: "errors", use: "Same error-normalizing job as utils/error, scoped for debug-console output.", files: ["/src/debugger/errors.ts"] },
             { name: "performance", use: "Navigation/resource timing, custom marks, long-task detection.", files: ["/src/debugger/performance.ts"] },
+            { name: "webVitals", use: "Report Core Web Vitals (LCP, CLS, INP, FCP, TTFB) for real-user monitoring, via the official web-vitals library.", files: ["/src/debugger/webVitals.ts"] },
         ],
     },
     {

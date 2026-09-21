@@ -2,7 +2,7 @@
 
 A personal library of copy-paste-ready React/TypeScript pieces. Nothing here is meant to run as an app — each file is self-contained (or depends only on other files in this repo) so you can lift it straight into a new project. This doc is a catalog of what exists and when to reach for it, so future-you doesn't have to open every file to remember what's here.
 
-Stack: **React 19**, **TypeScript**, **Vite 8**, **Tailwind CSS 4**, **Zod 4**, **Axios**, **TanStack React Table v9**, **TanStack Virtual**, **Zustand**, **Redux Toolkit**, **MobX**.
+Stack: **React 19**, **TypeScript**, **Vite 8**, **Tailwind CSS 4**, **Zod 4**, **Axios**, **TanStack React Table v9**, **TanStack Virtual**, **Zustand**, **Redux Toolkit**, **MobX**, **web-vitals**.
 
 ## How to use this repo
 
@@ -14,7 +14,7 @@ There's no package to install — copy the file(s) you need into your target pro
 
 ## Contents
 
-React hooks · UI components · State management templates · Utilities (array/date/number/object/string/error/validation/file/download/excel) · API clients · Debug toolkit · Constants · Data · CSS
+React hooks · UI components · State management templates · Utilities (array/date/number/object/string/error/validation/file/download/excel/performance/react) · API clients · Debug toolkit · Constants · Data · CSS
 
 ---
 
@@ -44,6 +44,11 @@ Every hook below has full JSDoc in its file (purpose, when/when-not to use, SSR 
 | `useEventListener(eventName, handler, target?, options?)` | Type-safe `addEventListener`/cleanup wrapper for `window`/`document`/an element or ref — the low-level primitive most of the above hooks are built on. |
 | `useCopyToClipboard(options?)` | `{ copy, copiedText, isCopied, error }` — clipboard writes with a legacy `execCommand` fallback and auto-resetting "copied" state. |
 | `useControllableState({ value, defaultValue, onChange })` | Generic controlled/uncontrolled `[value, setValue]`, `setValue` accepting a plain value or an updater function — the same shape TanStack Table's `state`/`onXChange` options expect. Powers `DataTable`. |
+| `useLatest(value)` | A ref that always holds the current value — read it inside a long-lived subscription without re-subscribing on every change. |
+| `useStableCallback(callback)` | A function with a stable identity across renders that always calls the latest `callback` — for memoized children / effect deps. |
+| `useWebWorker(createWorker)` | `{ run, terminate }` — run CPU-heavy work on a Web Worker instead of blocking the main thread; see the file header for the worker's required message protocol. |
+
+`useElementSize` and `useIntersectionObserver` both share ONE underlying `ResizeObserver`/`IntersectionObserver` instance across every hook call (see `react-hooks/internal/`), instead of creating one observer per observed element — same public API, better at scale.
 
 ---
 
@@ -64,6 +69,7 @@ Generic and unstyled/minimally-styled — bring your own CSS/Tailwind classes vi
 | `ScrollArea` (`ScrollArea/ScrollArea.tsx` + `.css`) | `overflow` wrapper with custom-styled scrollbars (vertical/horizontal/both); override scrollbar colors via CSS vars (`--scrollbar-track`, `--scrollbar-thumb`, `--scrollbar-thumb-hover`). |
 | `DataTable` (`DataTable/DataTable.tsx`) | Full-featured headless table wrapping TanStack Table v9: sorting, per-column filters + debounced global search, pagination (client-side or server-side via `manualPagination`), column pinning (`start`/`end`) + resizing, column visibility menu, row selection (auto-injected checkbox column), CSV export, and row virtualization (`@tanstack/react-virtual`, opt-in via `enableRowVirtualization` + `containerHeight`). Style via `classNames={{ th, td, tr, ... }}` and `[data-sorted]`/`[data-pinned]`/`[data-selected]`/`[data-resizing]` selectors — no baked-in visual styling. See `DataTable/` subsection below. |
 | `Select` (`Select/Select.tsx`) | Headless, fully-configurable select — single or multi-value, `variant="custom"` (default) or `variant="native"` (a real `<select>`), searchable (local filter or async via `onSearch`), grouped options, multi-select as removable pills or a "N selected" summary, optional checkboxes, creatable (`enableCreatable` + `onCreateOption`), and virtualized option lists (`enableVirtualization`, same `@tanstack/react-virtual` dependency as `DataTable`). Dropdown positioning is hand-rolled (absolute below trigger, flips up once on open if cramped) rather than `@floating-ui/react` — a deliberate simplicity tradeoff, so it can clip inside `overflow: hidden` ancestors. Style via `classNames={{ trigger, dropdown, option, pill, ... }}` and `[data-active]`/`[data-selected]`/`[data-disabled]` selectors. See `Select/` subsection below. |
+| `VirtualList` / `VirtualGrid` (`VirtualList/`) | Generic headless virtualization on `@tanstack/react-virtual`, standalone from `DataTable`/`Select`. `VirtualList` for a long uniform/variable-height list (chat, feed); `VirtualGrid` for a fixed-size card/photo grid — virtualizes rows only, assumes all columns fit the viewport width. |
 
 ### `DataTable/` — usage note
 
@@ -137,6 +143,7 @@ All pure functions unless noted. Every file has full JSDoc with examples, error 
 | `groupBy` | `groupBy(array, getKey): Record<string, T[]>` | Groups items by a derived key. |
 | `unique` | `unique(array): T[]` | Dedupe by `Set` (SameValueZero). Objects dedupe by reference, not contents. |
 | `uniqueBy` | `uniqueBy(array, getKey): T[]` | Dedupe by a derived key, keeps first occurrence. |
+| `processInChunks` | `processInChunks(array, fn, { chunkSize?, signal? }): Promise<void>` | Processes a huge array without blocking the main thread — yields to the browser between chunks instead of running as one long task. |
 
 ### `date/`
 | Function | Signature | Notes |
@@ -161,6 +168,7 @@ All pure functions unless noted. Every file has full JSDoc with examples, error 
 | `omit` | `omit(object, keys): Omit<T, K>` | New object without the listed keys. Shallow copy. |
 | `omitNil` | `omitNil(object): T` | Strips only `null`/`undefined` values — keeps `0`, `false`, `''`. Good for cleaning API payloads/query params. |
 | `isEmpty` | `isEmpty(value): boolean` | `true` for `{}`, `null`, `undefined`. Checks key presence, not "falsy values". |
+| `shallowEqual` | `shallowEqual(a, b): boolean` | One-level-deep comparison — the exact check `React.memo` uses by default, exposed for custom `areEqual` comparators. |
 
 ### `string/`
 | Function | Signature | Notes |
@@ -204,6 +212,16 @@ Prebuilt Zod schema factories so form validation doesn't get reinvented per proj
 | `excel.constants.ts` | `EXCEL_MIME_TYPES`, `EXCEL_EXTENSIONS` | `.xlsx`/`.xls` MIME types and extensions. |
 | `excel.utils.ts` | `isValidExcelFormat(file): boolean` | Checks a `File`'s extension + MIME type against the constants above. No parsing library involved — pair with a real parser (e.g. SheetJS) if you need to read cell data. |
 
+### `performance/`
+| Function | Signature | Notes |
+|---|---|---|
+| `rafThrottle` | `rafThrottle(fn): fn & { cancel() }` | Throttles a plain callback to at most once per animation frame — for `addEventListener`-attached scroll/mousemove/drag handlers outside React. |
+
+### `react/`
+| Function | Signature | Notes |
+|---|---|---|
+| `lazyWithRetry` | `lazyWithRetry(factory): LazyExoticComponent<T>` | Drop-in `React.lazy` replacement — reloads the page once on a chunk-load failure (stale deploy), instead of just erroring. |
+
 ---
 
 ## API clients — `src/api/`
@@ -214,12 +232,13 @@ Two independent HTTP wrappers — pick one per project, they're not meant to be 
 |---|---|---|
 | `fetch.ts` | `apiFetch<T>(path, options?)`, `ApiFetchError` | Native-`fetch` wrapper: JSON body auto-encoding, `AbortController` timeout (default 30s, configurable, supports an external `signal`), throws `ApiFetchError` (with `status`/`statusText`/`data`) on non-2xx — unlike raw `fetch`, which doesn't reject on HTTP errors. No auth assumptions; add headers/cookies yourself. |
 | `axios.ts` | `api` (configured `AxiosInstance`) | Single shared Axios instance with base URL (from `VITE_API_BASE_URL` / `NEXT_PUBLIC_API_BASE_URL`), 30s timeout, `withCredentials: true`, and empty request/response interceptor stubs ready for auth/error-handling logic. |
+| `dedupeRequest.ts` | `dedupeRequest(fn, getKey?)` | Wraps any async function so overlapping calls with the same key share one in-flight promise instead of firing duplicate requests. Works with `apiFetch`/`api` or any async function. |
 
 ---
 
 ## Debug toolkit — `src/debugger/`
 
-Dev-time utilities, all re-exported from one barrel: `import { logger, inspect, browser, storage, errors, start, measure } from './debugger'`.
+Dev-time utilities, all re-exported from one barrel: `import { logger, inspect, browser, storage, errors, start, measure, reportWebVitals } from './debugger'`.
 
 | Module | Key exports | What it's for |
 |---|---|---|
@@ -230,6 +249,7 @@ Dev-time utilities, all re-exported from one barrel: `import { logger, inspect, 
 | `storage.ts` | `storage` (`.get/.getJson/.set/.setJson/.remove/.clear`) | Inspect/manipulate `localStorage`/`sessionStorage` from code or devtools console. |
 | `errors.ts` | `errors` (`.normalize/.isError/.message/.stack`) | Same normalization job as `utils/error/*` but scoped for debug-console use. |
 | `performance.ts` | `performanceSummary`, `navigation`, `resources`, `marks`, `measures`, `mark`, `clearMarks`, `clearMeasures`, `observeLongTasks` | Wraps the `Performance`/`PerformanceObserver` APIs — navigation timing, resource timing, custom marks/measures, long-task detection. |
+| `webVitals.ts` | `reportWebVitals(onReport, options?)` | Reports Core Web Vitals (LCP, CLS, INP, FCP, TTFB) via the official `web-vitals` library, for real-user monitoring. |
 
 Import individual modules directly (`./debugger/logger`) if you only need one piece and want to avoid pulling in the rest.
 

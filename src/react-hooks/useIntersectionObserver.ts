@@ -133,6 +133,13 @@
  *   handled by the browser and callbacks are not fired for every scroll
  *   event.
  *
+ *   Every `useIntersectionObserver` call anywhere in the app that uses the
+ *   SAME (root, rootMargin, threshold) shares ONE underlying
+ *   `IntersectionObserver` instance (see
+ *   internal/sharedIntersectionObserver.ts) instead of creating a new
+ *   observer per call — this matters once you have many observed elements
+ *   at once (e.g. lazy-loading images in a long feed).
+ *
  * USAGE
  *
  *   const sectionRef = useRef<HTMLDivElement>(null)
@@ -149,6 +156,8 @@
  */
 
 import { useEffect, useRef, useState, type RefObject } from 'react'
+
+import { observeIntersection } from './internal/sharedIntersectionObserver'
 
 export interface UseIntersectionObserverOptions {
     /** Whether the observer is active. Default: `true`. */
@@ -238,36 +247,18 @@ export function useIntersectionObserver(
             return
         }
 
-        const observer = new IntersectionObserver(
-            ([observerEntry]) => {
-                if (!observerEntry) {
-                    return
-                }
+        const unsubscribe = observeIntersection(target, { root, rootMargin, threshold }, (observerEntry) => {
+            setEntry(observerEntry)
 
-                setEntry(observerEntry)
+            callbackRef.current?.(observerEntry)
 
-                callbackRef.current?.(observerEntry)
-
-                if (
-                    freezeOnceVisible &&
-                    observerEntry.isIntersecting
-                ) {
-                    hasIntersectedRef.current = true
-                    observer.unobserve(target)
-                }
-            },
-            {
-                root,
-                rootMargin,
-                threshold,
+            if (freezeOnceVisible && observerEntry.isIntersecting) {
+                hasIntersectedRef.current = true
+                unsubscribe()
             }
-        )
+        })
 
-        observer.observe(target)
-
-        return () => {
-            observer.disconnect()
-        }
+        return unsubscribe
     }, [
         enabled,
         ref,

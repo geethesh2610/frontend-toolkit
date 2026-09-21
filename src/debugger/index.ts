@@ -32,6 +32,10 @@
  * performance
  *   Inspect browser/page performance.
  *
+ * webVitals
+ *   Report Core Web Vitals (LCP, CLS, INP, FCP, TTFB) for real-user
+ *   monitoring.
+ *
  *
  * USAGE
  * -----
@@ -157,3 +161,11 @@ export type {
     NavigationTiming,
     PerformanceSummary,
 } from "./performance";
+
+export {
+    reportWebVitals,
+} from "./webVitals";
+
+export type {
+    WebVitalMetric,
+} from "./webVitals";

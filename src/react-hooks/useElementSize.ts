@@ -63,8 +63,15 @@
  *   in the component that uses this hook in Next.js App Router.
  *
  * CLEANUP
- *   The `ResizeObserver` is disconnected whenever the observed node
- *   changes and on unmount.
+ *   The subscription is released whenever the observed node changes and on
+ *   unmount.
+ *
+ * PERFORMANCE
+ *   Every `useElementSize` call anywhere in the app shares ONE underlying
+ *   `ResizeObserver` instance (see internal/sharedResizeObserver.ts) rather
+ *   than creating a new observer per call — this matters once you have many
+ *   measured elements on screen at once (e.g. a grid of self-measuring
+ *   cards), where one-observer-per-element doesn't scale well.
  *
  * USAGE
  *   function Chart() {
@@ -80,6 +87,8 @@
  */
 
 import { useCallback, useEffect, useState } from 'react'
+
+import { observeElementSize } from './internal/sharedResizeObserver'
 
 export interface UseElementSizeOptions {
     /** Which CSS box to measure. Default `'content-box'`. */
@@ -141,17 +150,9 @@ export function useElementSize<T extends HTMLElement = HTMLElement>(
             return
         }
 
-        const observer = new ResizeObserver((entries) => {
-            const entry = entries[0]
-            if (!entry) return
+        return observeElementSize(node, box, (entry) => {
             setSize(readEntrySize(entry, box))
         })
-
-        observer.observe(node, { box })
-
-        return () => {
-            observer.disconnect()
-        }
     }, [node, box])
 
     return { ref, width: size.width, height: size.height }
