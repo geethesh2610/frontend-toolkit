@@ -29,5 +29,5 @@ export function Button({
     fullWidth,
     ...rest
 }: ButtonProps & ButtonHTMLAttributes<HTMLButtonElement>) {
-    return <StyledButton variant={variant} size={size} fullWidth={fullWidth} {...rest} />
+    return <StyledButton $variant={variant} $size={size} $fullWidth={fullWidth} {...rest} />
 }

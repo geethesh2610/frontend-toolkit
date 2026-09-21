@@ -302,16 +302,6 @@ function detectOS(): {
     };
 }
 
-function isTouchDevice(): boolean {
-    const windowApi = getWindow();
-    const navigatorApi = getNavigator();
-
-    return (
-        "ontouchstart" in windowApi ||
-        navigatorApi.maxTouchPoints > 0
-    );
-}
-
 function detectDeviceType(): DeviceType {
     const userAgent = getNavigator().userAgent.toLowerCase();
 

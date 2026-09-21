@@ -24,6 +24,18 @@ export interface ButtonProps {
     fullWidth?: boolean
 }
 
+/**
+ * `StyledButton` renders a real `<button>`, so any prop styled-components
+ * doesn't recognize as a valid HTML attribute gets forwarded straight onto
+ * the DOM node. `$`-prefixed "transient" props are excluded from that
+ * forwarding automatically — used here for styling only.
+ */
+interface StyledButtonProps {
+    $variant?: ButtonVariant
+    $size?: ButtonSize
+    $fullWidth?: boolean
+}
+
 const VARIANT_STYLES: Record<ButtonVariant, ReturnType<typeof css>> = {
     primary: css`
         background: #2563eb;
@@ -69,12 +81,12 @@ const SIZE_STYLES: Record<ButtonSize, ReturnType<typeof css>> = {
     `,
 }
 
-export const StyledButton = styled.button<ButtonProps>`
+export const StyledButton = styled.button<StyledButtonProps>`
     display: inline-flex;
     align-items: center;
     justify-content: center;
     gap: 6px;
-    width: ${({ fullWidth }) => (fullWidth ? '100%' : 'auto')};
+    width: ${({ $fullWidth }) => ($fullWidth ? '100%' : 'auto')};
     border-radius: 6px;
     font-weight: 500;
     line-height: 1.2;
@@ -83,8 +95,8 @@ export const StyledButton = styled.button<ButtonProps>`
         background-color 0.15s ease,
         transform 0.1s ease;
 
-    ${({ variant = 'primary' }) => VARIANT_STYLES[variant]}
-    ${({ size = 'md' }) => SIZE_STYLES[size]}
+    ${({ $variant = 'primary' }) => VARIANT_STYLES[$variant]}
+    ${({ $size = 'md' }) => SIZE_STYLES[$size]}
 
     /* >= 768px: comfortable padding, standard text size */
     ${media.tablet`

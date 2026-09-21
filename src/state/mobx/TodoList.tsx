@@ -12,6 +12,20 @@ import { useState, type FormEvent } from "react";
 import { observer } from "mobx-react-lite";
 
 import { StoreProvider } from "./StoreContext";
+import {
+    AddButton,
+    ClearButton,
+    Footer,
+    Form,
+    Input,
+    List,
+    ListItem,
+    RemainingCount,
+    RemoveButton,
+    TodoLabel,
+    TodoText,
+    Wrapper,
+} from "./TodoList.style";
 import { useTodoStore } from "./useTodoStore";
 
 const TodoListInner = observer(function TodoListInner() {
@@ -27,41 +41,41 @@ const TodoListInner = observer(function TodoListInner() {
     };
 
     return (
-        <div>
-            <form onSubmit={handleSubmit}>
-                <input
+        <Wrapper>
+            <Form onSubmit={handleSubmit}>
+                <Input
                     value={text}
                     onChange={(event) => setText(event.target.value)}
                     placeholder="Add a todo"
                 />
-                <button type="submit">Add</button>
-            </form>
+                <AddButton type="submit">Add</AddButton>
+            </Form>
 
-            <ul>
+            <List>
                 {store.todos.map((todo) => (
-                    <li key={todo.id}>
-                        <label>
+                    <ListItem key={todo.id}>
+                        <TodoLabel>
                             <input
                                 type="checkbox"
                                 checked={todo.completed}
                                 onChange={() => store.toggleTodo(todo.id)}
                             />
-                            <span style={{ textDecoration: todo.completed ? "line-through" : undefined }}>
-                                {todo.text}
-                            </span>
-                        </label>
-                        <button type="button" onClick={() => store.removeTodo(todo.id)}>
+                            <TodoText $completed={todo.completed}>{todo.text}</TodoText>
+                        </TodoLabel>
+                        <RemoveButton type="button" onClick={() => store.removeTodo(todo.id)}>
                             Remove
-                        </button>
-                    </li>
+                        </RemoveButton>
+                    </ListItem>
                 ))}
-            </ul>
+            </List>
 
-            <p>{store.remainingCount} remaining</p>
-            <button type="button" onClick={() => store.clearCompleted()}>
-                Clear completed
-            </button>
-        </div>
+            <Footer>
+                <RemainingCount>{store.remainingCount} remaining</RemainingCount>
+                <ClearButton type="button" onClick={() => store.clearCompleted()}>
+                    Clear completed
+                </ClearButton>
+            </Footer>
+        </Wrapper>
     );
 });
 

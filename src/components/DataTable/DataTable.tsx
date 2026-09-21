@@ -151,16 +151,26 @@ function ColumnFilterInput<TData extends RowData>({
     }
 
     if (variant === "number") {
+        // A numeric column's filterFn auto-resolves to `inNumberRange` (see
+        // TanStack's `column_getAutoFilterFn`), which expects `[min, max]`.
+        // A single input still means "exact match" — sent as `[n, n]` so it
+        // fits what `inNumberRange`'s `resolveFilterValue` expects instead
+        // of the bare number it used to send (which crashed with "val is
+        // not iterable" the moment a filter value was set).
+        const [rangeMin] = (value as [number, number] | undefined) ?? [];
         return (
             <input
                 type="number"
                 className={className}
-                value={(value as number | string) ?? ""}
-                onChange={(event) =>
-                    column.setFilterValue(
-                        event.target.value === "" ? undefined : Number(event.target.value),
-                    )
-                }
+                value={rangeMin ?? ""}
+                onChange={(event) => {
+                    if (event.target.value === "") {
+                        column.setFilterValue(undefined);
+                        return;
+                    }
+                    const num = Number(event.target.value);
+                    column.setFilterValue([num, num]);
+                }}
                 aria-label={`Filter ${column.id}`}
             />
         );

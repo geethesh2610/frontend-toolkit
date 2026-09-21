@@ -7,6 +7,20 @@
 import { useState, type FormEvent } from "react";
 
 import { TodoProvider } from "./TodoContext";
+import {
+    AddButton,
+    ClearButton,
+    Footer,
+    Form,
+    Input,
+    List,
+    ListItem,
+    RemainingCount,
+    RemoveButton,
+    TodoLabel,
+    TodoText,
+    Wrapper,
+} from "./TodoList.style";
 import { useRemainingCount, useTodoActions, useTodos } from "./useTodo";
 
 function TodoListInner() {
@@ -24,41 +38,41 @@ function TodoListInner() {
     };
 
     return (
-        <div>
-            <form onSubmit={handleSubmit}>
-                <input
+        <Wrapper>
+            <Form onSubmit={handleSubmit}>
+                <Input
                     value={text}
                     onChange={(event) => setText(event.target.value)}
                     placeholder="Add a todo"
                 />
-                <button type="submit">Add</button>
-            </form>
+                <AddButton type="submit">Add</AddButton>
+            </Form>
 
-            <ul>
+            <List>
                 {todos.map((todo) => (
-                    <li key={todo.id}>
-                        <label>
+                    <ListItem key={todo.id}>
+                        <TodoLabel>
                             <input
                                 type="checkbox"
                                 checked={todo.completed}
                                 onChange={() => toggleTodo(todo.id)}
                             />
-                            <span style={{ textDecoration: todo.completed ? "line-through" : undefined }}>
-                                {todo.text}
-                            </span>
-                        </label>
-                        <button type="button" onClick={() => removeTodo(todo.id)}>
+                            <TodoText $completed={todo.completed}>{todo.text}</TodoText>
+                        </TodoLabel>
+                        <RemoveButton type="button" onClick={() => removeTodo(todo.id)}>
                             Remove
-                        </button>
-                    </li>
+                        </RemoveButton>
+                    </ListItem>
                 ))}
-            </ul>
+            </List>
 
-            <p>{remaining} remaining</p>
-            <button type="button" onClick={clearCompleted}>
-                Clear completed
-            </button>
-        </div>
+            <Footer>
+                <RemainingCount>{remaining} remaining</RemainingCount>
+                <ClearButton type="button" onClick={clearCompleted}>
+                    Clear completed
+                </ClearButton>
+            </Footer>
+        </Wrapper>
     );
 }
 

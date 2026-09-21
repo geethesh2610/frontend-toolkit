@@ -12,6 +12,20 @@ import { Provider } from "react-redux";
 
 import { useAppDispatch, useAppSelector } from "./hooks";
 import { store } from "./store";
+import {
+    AddButton,
+    ClearButton,
+    Footer,
+    Form,
+    Input,
+    List,
+    ListItem,
+    RemainingCount,
+    RemoveButton,
+    TodoLabel,
+    TodoText,
+    Wrapper,
+} from "./TodoList.style";
 import { selectRemainingCount, selectTodos } from "./todosSelectors";
 import { add, clearCompleted, remove, toggle } from "./todosSlice";
 
@@ -30,41 +44,41 @@ function TodoListInner() {
     };
 
     return (
-        <div>
-            <form onSubmit={handleSubmit}>
-                <input
+        <Wrapper>
+            <Form onSubmit={handleSubmit}>
+                <Input
                     value={text}
                     onChange={(event) => setText(event.target.value)}
                     placeholder="Add a todo"
                 />
-                <button type="submit">Add</button>
-            </form>
+                <AddButton type="submit">Add</AddButton>
+            </Form>
 
-            <ul>
+            <List>
                 {todos.map((todo) => (
-                    <li key={todo.id}>
-                        <label>
+                    <ListItem key={todo.id}>
+                        <TodoLabel>
                             <input
                                 type="checkbox"
                                 checked={todo.completed}
                                 onChange={() => dispatch(toggle(todo.id))}
                             />
-                            <span style={{ textDecoration: todo.completed ? "line-through" : undefined }}>
-                                {todo.text}
-                            </span>
-                        </label>
-                        <button type="button" onClick={() => dispatch(remove(todo.id))}>
+                            <TodoText $completed={todo.completed}>{todo.text}</TodoText>
+                        </TodoLabel>
+                        <RemoveButton type="button" onClick={() => dispatch(remove(todo.id))}>
                             Remove
-                        </button>
-                    </li>
+                        </RemoveButton>
+                    </ListItem>
                 ))}
-            </ul>
+            </List>
 
-            <p>{remaining} remaining</p>
-            <button type="button" onClick={() => dispatch(clearCompleted())}>
-                Clear completed
-            </button>
-        </div>
+            <Footer>
+                <RemainingCount>{remaining} remaining</RemainingCount>
+                <ClearButton type="button" onClick={() => dispatch(clearCompleted())}>
+                    Clear completed
+                </ClearButton>
+            </Footer>
+        </Wrapper>
     );
 }
 
