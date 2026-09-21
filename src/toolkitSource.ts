@@ -13,3 +13,6 @@ const rawModules = import.meta.glob("/src/**/*.{ts,tsx,css,json}", {
 export function getSource(path: string): string | undefined {
     return rawModules[path];
 }
+
+/** Every source path this glob knows about — used to resolve/validate local import specifiers. */
+export const ALL_SOURCE_PATHS: string[] = Object.keys(rawModules);

@@ -12,6 +12,7 @@ import {
     Brand,
     BrandMark,
     BrandName,
+    BrandRow,
     Chevron,
     Content,
     CountBadge,
@@ -27,6 +28,8 @@ import {
     ItemCardUse,
     Kicker,
     Layout,
+    MobileMenuButton,
+    MobileTopBar,
     NoResults,
     SearchBox,
     SearchIcon,
@@ -35,15 +38,20 @@ import {
     SidebarFolderLink,
     SidebarGroup,
     SidebarItemLink,
+    SidebarOverlay,
     SidebarSubtitle,
     StatGrid,
     StatLabel,
     StatNumber,
     StatTile,
     Subtitle,
+    ThemeToggleButton,
     Title,
 } from "./App.style";
-import { CodeView } from "./CodeView";
+import { CodeView, RawFileView } from "./CodeView";
+import { useDisclosure } from "./react-hooks/useDisclosure";
+import { useLocalStorage } from "./react-hooks/useLocalStorage";
+import { useMediaQuery } from "./react-hooks/useMediaQuery";
 
 function useHash() {
     const [hash, setHash] = useState(() => window.location.hash.replace(/^#/, ""));
@@ -57,17 +65,52 @@ function useHash() {
     return hash;
 }
 
+type ThemePreference = "light" | "dark";
+
+/** Dogfoods this toolkit's own hooks: persisted, system-aware theme preference. */
+function useTheme() {
+    const prefersDark = useMediaQuery("(prefers-color-scheme: dark)");
+    const { value: theme, setValue: setTheme } = useLocalStorage<ThemePreference>("ft-theme", () =>
+        prefersDark ? "dark" : "light",
+    );
+
+    useEffect(() => {
+        document.documentElement.setAttribute("data-theme", theme);
+    }, [theme]);
+
+    const toggleTheme = () => setTheme((current) => (current === "dark" ? "light" : "dark"));
+
+    return { theme, toggleTheme };
+}
+
 export const App = () => {
     const hash = useHash();
     const [query, setQuery] = useState("");
+    const { theme, toggleTheme } = useTheme();
 
+    const isMobile = useMediaQuery("(max-width: 760px)");
+    const { isOpen: isMobileNavOpen, close: closeMobileNav, toggle: toggleMobileNav } = useDisclosure();
+
+    // The drawer only needs to exist as "open" state on mobile — closing it
+    // whenever the viewport crosses back to desktop keeps it from being
+    // stuck open (as a fixed overlay) if the window is resized while open.
+    useEffect(() => {
+        if (!isMobile) closeMobileNav();
+    }, [isMobile, closeMobileNav]);
+
+    useEffect(() => {
+        closeMobileNav();
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [hash]);
+
+    const fileKey = hash.startsWith("file/") ? hash.slice("file".length) : undefined;
     const codeKey = hash.startsWith("code/") ? hash.slice("code/".length) : undefined;
     const codeEntry = codeKey ? getItemByKey(codeKey) : undefined;
 
     const activeFolderSlug = codeEntry ? slugifyFolder(codeEntry.folder) : hash;
     const activeItemKey = codeEntry?.key;
 
-    const folderSection = !codeEntry ? TOOLKIT.find((section) => slugifyFolder(section.folder) === hash) : undefined;
+    const folderSection = !codeEntry && !fileKey ? TOOLKIT.find((section) => slugifyFolder(section.folder) === hash) : undefined;
 
     const filteredGroups = useMemo(() => {
         const q = query.trim().toLowerCase();
@@ -84,11 +127,29 @@ export const App = () => {
     return (
         <Layout>
             <GlobalStyle />
-            <Sidebar>
-                <Brand href="#">
-                    <BrandMark>FT</BrandMark>
-                    <BrandName>frontend-toolkit</BrandName>
-                </Brand>
+
+            <MobileTopBar>
+                <MobileMenuButton type="button" aria-label="Toggle navigation" onClick={toggleMobileNav}>
+                    ☰
+                </MobileMenuButton>
+                <BrandName>frontend-toolkit</BrandName>
+                <ThemeToggleButton type="button" aria-label="Toggle theme" onClick={toggleTheme}>
+                    {theme === "dark" ? "☀" : "☾"}
+                </ThemeToggleButton>
+            </MobileTopBar>
+
+            {isMobileNavOpen && <SidebarOverlay onClick={closeMobileNav} />}
+
+            <Sidebar $mobileOpen={isMobileNavOpen}>
+                <BrandRow>
+                    <Brand href="#">
+                        <BrandMark>FT</BrandMark>
+                        <BrandName>frontend-toolkit</BrandName>
+                    </Brand>
+                    <ThemeToggleButton type="button" aria-label="Toggle theme" onClick={toggleTheme}>
+                        {theme === "dark" ? "☀" : "☾"}
+                    </ThemeToggleButton>
+                </BrandRow>
                 <SidebarSubtitle>Copy-paste reference</SidebarSubtitle>
 
                 <SearchBox>
@@ -116,6 +177,8 @@ export const App = () => {
             <Content>
                 {codeEntry ? (
                     <CodeView entry={codeEntry} />
+                ) : fileKey ? (
+                    <RawFileView path={fileKey} />
                 ) : folderSection ? (
                     <div>
                         <Eyebrow>Folder</Eyebrow>
