@@ -10,7 +10,7 @@ There's no package to install — copy the file(s) you need into your target pro
 
 - **Hooks / components / utils / API clients / debugger / constants / data / CSS** — each file (or component folder) is standalone; copy it as-is. Check its "Notes" column or file header for its only-real dependency (usually another file in the same folder, e.g. `DataTable` needs `features.ts` + `columnHelpers.ts`).
 - **State management templates** (`src/state/`) — copy the whole folder for the approach you want, then rename the `Todo`/`todos` domain to your own.
-- `npm run dev` runs `src/App.tsx`, which renders `DataTable` (plain + virtualized), every `Select` configuration, and all four state templates side by side — the fastest way to see something working before you lift the code out.
+- `npm run dev` runs `src/App.tsx`, a static index page (folder → what's in it) for a quick reminder of what's here — it doesn't render the components live. This doc is the source of truth for usage notes.
 
 ## Contents
 
@@ -107,13 +107,13 @@ const options: SelectOption<string>[] = [
   onSearch={(query) => fetchResults(query).then(setResults)} />
 ```
 
-`useSelect.ts` is where the interaction logic (open state, value, search/filter, keyboard nav, typeahead) lives; `CustomSelect.tsx`/`NativeSelect.tsx` are rendering only, switched on by `Select.tsx` via the `variant` prop. See `src/App.tsx` for all seven configurations (single, multi-pills, multi-summary, native, creatable, async, virtualized) side by side.
+`useSelect.ts` is where the interaction logic (open state, value, search/filter, keyboard nav, typeahead) lives; `CustomSelect.tsx`/`NativeSelect.tsx` are rendering only, switched on by `Select.tsx` via the `variant` prop.
 
 ---
 
 ## State management templates — `src/state/`
 
-Unlike the rest of this repo, these aren't meant to be imported as-is — they're **starter kits to copy into a new project wholesale**, then rename the domain (`Todo`/`todos`) and adjust to fit. All four implement the exact same tiny domain (a todo list: add/toggle/remove/clear-completed, plus a derived remaining-count) so you can diff them side by side and pick the one that fits the project, instead of comparing four unrelated examples. Each folder ships both the state code and a working React component that consumes it (form + list + remaining count), so copying a folder gets you something that actually renders, not just a store with nothing wired up. `src/App.tsx` renders all four side by side as a live comparison.
+Unlike the rest of this repo, these aren't meant to be imported as-is — they're **starter kits to copy into a new project wholesale**, then rename the domain (`Todo`/`todos`) and adjust to fit. All four implement the exact same tiny domain (a todo list: add/toggle/remove/clear-completed, plus a derived remaining-count) so you can diff them side by side and pick the one that fits the project, instead of comparing four unrelated examples. Each folder ships both the state code and a working React component that consumes it (form + list + remaining count), so copying a folder gets you something that actually renders, not just a store with nothing wired up.
 
 | Folder | Approach | Key files |
 |---|---|---|
