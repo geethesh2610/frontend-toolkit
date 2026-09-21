@@ -8,19 +8,24 @@
  * argument); it's a no-op if the extension isn't installed, so it's safe to
  * leave in. Remove the `devtools(...)` wrapper if you don't want it.
  *
- * To copy this into a new project: rename `Todo`/`todos`, adjust the actions,
- * keep the `create<T>()(...)` currying (required for middleware to infer
- * types correctly) and the selector-per-hook-call convention below.
+ * SETUP — where this file goes and how to wire it in
+ * ----------------------------------------------------------------------------
+ * 1. Copy this one file into your project, e.g. src/store/useTodoStore.ts.
+ *    Also copy ../todo.types.ts alongside it (or inline its one type here).
+ * 2. Rename `Todo`/`todos`, adjust the actions to your domain. Keep the
+ *    `create<T>()(...)` currying (required for middleware to infer types
+ *    correctly).
+ * 3. No provider, no setup in main.tsx/App.tsx — import the hook straight
+ *    into any component:
  *
- * Usage:
+ *      import { useTodoStore } from './store/useTodoStore'
  *
- * const todos = useTodoStore((state) => state.todos)
- * const addTodo = useTodoStore((state) => state.addTodo)
+ *      const todos = useTodoStore((state) => state.todos)
+ *      const addTodo = useTodoStore((state) => state.addTodo)
  *
  * Always select the narrowest slice you need (`state => state.todos`, not
  * the whole store) — components only re-render when their selected slice
  * changes.
- *
  * ============================================================================
  */
 

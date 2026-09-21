@@ -14,16 +14,28 @@
  * in useTodo.ts (kept separate so React Fast Refresh can hot-reload both
  * independently; a file mixing component + hook exports opts out of it).
  *
- * To copy this into a new project: rename `Todo`/`todos` (in todo.types.ts
- * and todoState.ts) to your domain, adjust `TodoAction`/`todoReducer`, keep
- * the state/dispatch split and the `createSafeContext` plumbing as-is.
+ * SETUP — where these files go and how to wire them in
+ * ----------------------------------------------------------------------------
+ * 1. Copy this whole folder (createSafeContext.ts, todoState.ts,
+ *    TodoContext.tsx, useTodo.ts) into your project, e.g. src/state/todo/.
+ *    Also copy ../todo.types.ts alongside it (or inline its one type here).
+ * 2. Rename `Todo`/`todos` to your domain in todo.types.ts and todoState.ts —
+ *    the state shape, the action union, and todoReducer's cases.
+ * 3. Wrap whatever part of your component tree needs this state with the
+ *    provider — usually your whole app, in main.tsx or App.tsx:
  *
- * Usage:
+ *      import { TodoProvider } from './state/todo/TodoContext'
  *
- * <TodoProvider>
- *   <TodoList />
- * </TodoProvider>
+ *      <TodoProvider>
+ *        <App />
+ *      </TodoProvider>
  *
+ * 4. Anywhere *inside* that provider, call the hooks from useTodo.ts —
+ *    NOT the raw context hooks from todoState.ts, those throw outside a
+ *    provider on purpose (see createSafeContext.ts):
+ *
+ *      const todos = useTodos()
+ *      const { addTodo, toggleTodo } = useTodoActions()
  * ============================================================================
  */
 

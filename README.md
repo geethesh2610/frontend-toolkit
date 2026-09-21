@@ -113,7 +113,7 @@ const options: SelectOption<string>[] = [
 
 ## State management templates — `src/state/`
 
-Unlike the rest of this repo, these aren't meant to be imported as-is — they're **starter kits to copy into a new project wholesale**, then rename the domain (`Todo`/`todos`) and adjust to fit. All four implement the exact same tiny domain (a todo list: add/toggle/remove/clear-completed, plus a derived remaining-count) so you can diff them side by side and pick the one that fits the project, instead of comparing four unrelated examples. Each folder ships both the state code and a working React component that consumes it (form + list + remaining count), so copying a folder gets you something that actually renders, not just a store with nothing wired up.
+Unlike the rest of this repo, these aren't meant to be imported as-is — they're **starter kits to copy into a new project wholesale**, then rename the domain (`Todo`/`todos`) and adjust to fit. All four implement the exact same tiny domain (a todo list: add/toggle/remove/clear-completed, plus a derived remaining-count) so you can diff them side by side and pick the one that fits the project, instead of comparing four unrelated examples. There's no demo UI to strip out — just the state logic — so what you copy is exactly what you keep.
 
 | Folder | Approach | Key files |
 |---|---|---|
@@ -122,7 +122,7 @@ Unlike the rest of this repo, these aren't meant to be imported as-is — they'r
 | `redux/` | Redux Toolkit — `createSlice` (Immer-powered "mutable" reducers), memoized selectors | `todosSlice.ts`, `todosSelectors.ts` (`createSelector`), `store.ts` (`configureStore`), `hooks.ts` (typed `useAppDispatch`/`useAppSelector`) |
 | `mobx/` | Class store (`makeAutoObservable`) provided via Context so instances aren't a bare module singleton | `TodoStore.ts`, `todoStoreContext.ts` + `StoreContext.tsx` (provider), `useTodoStore.ts` (consumer hook) — components reading the store must be wrapped in `observer()` from `mobx-react-lite` |
 
-Every folder's `TodoList.tsx` is the copy-paste starting point for a real feature component; every store/context file's header comment says exactly what to rename when adapting it.
+Every folder's provider/store file (`TodoContext.tsx` for context, `useTodoStore.ts` for zustand, `store.ts` for redux, `StoreContext.tsx` for mobx) has a **SETUP** block in its header comment: exactly which files to copy, where to put them, what to rename, and — for context/redux/mobx — the provider snippet to add to your `main.tsx`/`App.tsx` (zustand needs none). Read that block first when adapting a folder.
 
 ---
 
