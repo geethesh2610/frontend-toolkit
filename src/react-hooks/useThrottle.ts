@@ -211,7 +211,17 @@ export function useThrottle<T>(
             if (leading) {
                 setThrottledValue(value)
                 lastExecutionTimeRef.current = now
-            } else if (trailing) {
+            } else if (trailing && timeoutRef.current === null) {
+                /*
+                 * Guard against scheduling a second timeout on top of one
+                 * already pending: without this check, every value change
+                 * that arrives before the first (leading: false) timeout
+                 * fires would schedule another one, overwriting
+                 * `timeoutRef.current` and leaking the earlier timer
+                 * instead of clearing it — each stray timer would still
+                 * fire later, calling `setThrottledValue` more than once
+                 * per throttle interval.
+                 */
                 timeoutRef.current = setTimeout(() => {
                     setThrottledValue(
                         latestValueRef.current

@@ -286,13 +286,18 @@ export function useLocalStorage<T>(
             : initialValueRef.current
     }, [])
 
+    /*
+     * Always performs a REAL localStorage read (ignoring
+     * `initializeWithValue`). `initializeWithValue` only controls what the
+     * very first render returns (see the lazy `useState` initializer below)
+     * — once mounted, the hook must be able to actually read storage,
+     * otherwise `initializeWithValue: false` would disable persistence
+     * entirely instead of just deferring the first read past hydration.
+     */
     const readValue = useCallback((): T => {
         const fallbackValue = getInitialValue()
 
-        if (
-            !initializeWithValue ||
-            !isStorageAvailable()
-        ) {
+        if (!isStorageAvailable()) {
             return fallbackValue
         }
 
@@ -311,11 +316,12 @@ export function useLocalStorage<T>(
     }, [
         key,
         deserializer,
-        initializeWithValue,
         getInitialValue,
     ])
 
-    const [value, setValue] = useState<T>(readValue)
+    const [value, setValue] = useState<T>(() =>
+        initializeWithValue ? readValue() : getInitialValue()
+    )
 
     /*
      * Keep the latest value available to callbacks without creating stale
@@ -328,12 +334,25 @@ export function useLocalStorage<T>(
     }, [value])
 
     /*
-     * If the key changes, synchronize React state with the new localStorage
-     * entry.
+     * On mount, if the initial render deliberately skipped reading
+     * localStorage (`initializeWithValue: false`, for SSR/hydration
+     * safety), catch up with the real stored value now that we're on the
+     * client. After that, whenever `key` changes, synchronize React state
+     * with the new localStorage entry.
      */
+    const hasHydratedRef = useRef(false)
+
     useEffect(() => {
+        if (!hasHydratedRef.current) {
+            hasHydratedRef.current = true
+            if (!initializeWithValue) {
+                setValue(readValue())
+            }
+            return
+        }
+
         setValue(readValue())
-    }, [key, readValue])
+    }, [key, readValue, initializeWithValue])
 
     const setStoredValue = useCallback<Dispatch<SetStateAction<T>>>(
         (valueOrUpdater) => {

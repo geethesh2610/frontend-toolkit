@@ -261,6 +261,8 @@ Import individual modules directly (`./debugger/logger`) if you only need one pi
 |---|---|---|
 | `httpStatus.ts` | `HTTP_STATUS`, `HttpStatus` (type) | Named HTTP status codes (`HTTP_STATUS.NOT_FOUND` etc.) instead of magic numbers. `as const`. |
 | `keyboard.ts` | `KEYBOARD_KEYS`, `KeyboardKey` (type) | Named `KeyboardEvent.key` values (`KEYBOARD_KEYS.ESCAPE`, `.ARROW_DOWN`, etc). |
+| `zIndex.ts` | `Z_INDEX`, `ZIndex` (type) | One shared stacking-order scale (`DROPDOWN`/`STICKY`/`FIXED`/`OVERLAY`/`DRAWER`/`MODAL`/`POPOVER`/`TOOLTIP`/`TOAST`), 100 apart so a value can slot between tiers if genuinely needed. |
+| `regex.ts` | `REGEX`, `RegexName` (type) | Common format patterns (`EMAIL`, `URL`, `UUID`, `SLUG`, `PHONE_E164`, `HEX_COLOR`, `STRONG_PASSWORD`, ...) usable without Zod — overlaps a little with `zod.ts`'s `validationRegex`, which exists specifically to back Zod schemas. |
 
 ## Data — `src/data/`
 

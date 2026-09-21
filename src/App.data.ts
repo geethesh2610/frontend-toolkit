@@ -296,6 +296,8 @@ export const TOOLKIT: ToolkitSection[] = [
         items: [
             { name: "httpStatus.ts", use: "Reach for HTTP_STATUS.NOT_FOUND instead of the magic number 404.", files: ["/src/constants/httpStatus.ts"] },
             { name: "keyboard.ts", use: "Reach for KEYBOARD_KEYS.ESCAPE instead of the string literal \"Escape\".", files: ["/src/constants/keyboard.ts"] },
+            { name: "zIndex.ts", use: "One shared stacking-order scale (dropdown/modal/toast/...) instead of a z-index arms race of 9999, 99999, ...", files: ["/src/constants/zIndex.ts"] },
+            { name: "regex.ts", use: "Ready-to-use patterns (email, URL, UUID, slug, strong password, ...) for anywhere you need a plain RegExp, without pulling in Zod.", files: ["/src/constants/regex.ts"] },
         ],
     },
     {

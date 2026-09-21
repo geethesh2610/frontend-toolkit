@@ -1,8 +1,14 @@
 export function readFileAsText(
   file: Blob,
-  _encoding = "utf-8",
+  encoding = "utf-8",
 ): Promise<string> {
-  return file.text();
+  if (encoding.toLowerCase() === "utf-8") {
+    return file.text();
+  }
+
+  return file
+    .arrayBuffer()
+    .then((buffer) => new TextDecoder(encoding).decode(buffer));
 }
 
 export function readFileAsArrayBuffer(file: Blob): Promise<ArrayBuffer> {
